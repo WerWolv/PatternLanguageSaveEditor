@@ -1,0 +1,37 @@
+html, body, #app {
+  height: 100%;
+  overflow: hidden;
+}
+
+.console {
+  background-color: #080808;
+  border: solid 1px #808080;
+  overflow: auto;
+  font-family: monospace;
+}
+
+.console>.error {
+  color: #B04040;
+}
+
+.console>.debug {
+  color: #4f9a4f;
+}
+
+.console>.warning {
+  color: #B0B040;
+}
+
+.console>.info {
+  color: #62b3dc;
+}
+
+p {
+    margin: 0;
+}
+
+#fileLabel {
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 10px;
+}
