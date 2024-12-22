@@ -12,7 +12,7 @@
 static std::string consoleResult;
 static std::vector<pl::u8> loadedData;
 
-static std::vector<const pl::ptrn::Pattern *> propertyPatterns;
+static std::vector<pl::ptrn::Pattern *> propertyPatterns;
 static std::string uiConfig;
 
 static pl::PatternLanguage runtime;
@@ -44,7 +44,7 @@ extern "C" void setData(pl::u8 *data, size_t size) {
     });
 }
 
-static std::string generateUIJson(const std::vector<const pl::ptrn::Pattern *> &patterns) {
+static std::string generateUIJson(const std::vector<pl::ptrn::Pattern *> &patterns) {
     nlohmann::json json = nlohmann::json::array();
 
     std::map<std::string, std::map<std::string, pl::u64>> categorizedPatterns;
@@ -68,7 +68,10 @@ static std::string generateUIJson(const std::vector<const pl::ptrn::Pattern *> &
             itemJson["properties"] = nlohmann::json::object();
 
             const auto &pattern = patterns[patternIndex];
-            if (const auto uintPattern = dynamic_cast<const pl::ptrn::PatternUnsigned *>(pattern)) {
+            if (!pattern->getWriteFormatterFunction().empty()) {
+                itemJson["type"] = "string";
+                itemJson["properties"]["length"] = 0xFFFF;
+            } else if (const auto uintPattern = dynamic_cast<const pl::ptrn::PatternUnsigned *>(pattern)) {
                 itemJson["type"] = "unsigned";
                 itemJson["properties"]["min"] = 0U;
                 itemJson["properties"]["max"] = (1LLU << (uintPattern->getSize() * 8)) - 1;
@@ -102,6 +105,24 @@ static std::string generateUIJson(const std::vector<const pl::ptrn::Pattern *> &
     }
 
     return json.dump();
+}
+
+extern "C" void setPatternValueUnsigned(pl::u64 id, pl::u64 value) {
+    if (id >= propertyPatterns.size()) return;
+
+    propertyPatterns[id]->setValue(pl::u128(value));
+}
+
+extern "C" void setPatternValueSigned(pl::u64 id, pl::u64 value) {
+    if (id >= propertyPatterns.size()) return;
+
+    propertyPatterns[id]->setValue(pl::i128(value));
+}
+
+extern "C" void setPatternValueString(pl::u64 id, const char *value) {
+    if (id >= propertyPatterns.size()) return;
+
+    propertyPatterns[id]->setValue(std::string(value));
 }
 
 extern "C" void executePatternLanguageCode(const char *string) {

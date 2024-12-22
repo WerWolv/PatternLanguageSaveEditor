@@ -31,7 +31,7 @@ if (WEB_BUILD)
         target_compile_options(plwasm.js PRIVATE -fwasm-exceptions)
         target_link_options(plwasm.js PRIVATE
                 -fwasm-exceptions -fexceptions
-                -sEXPORTED_FUNCTIONS=_main,_executePatternLanguageCode,_getConsoleResult,_getUIConfig,_malloc,_free,_setData,_initialize
+                -sEXPORTED_FUNCTIONS=_main,_executePatternLanguageCode,_getConsoleResult,_getUIConfig,_malloc,_free,_setData,_initialize,_setPatternValueUnsigned,_setPatternValueSigned,_setPatternValueString
                 -sEXPORTED_RUNTIME_METHODS=['ccall','allocateUTF8','UTF8ToString']
                 -sEXPORT_ES6=1
                 -sMODULARIZE=1
